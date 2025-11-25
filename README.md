@@ -1,34 +1,52 @@
-📡 Kablosuz Haberleşme Path Loss (Yol Kaybı) Modelleri
-Selam, bu repo kablosuz haberleşmede sinyalin mesafe ve ortam şartlarına göre ne kadar zayıfladığını (Path Loss) hesaplayan MATLAB kodlarını içeriyor. "MIMO-OFDM Wireless Communications with MATLAB" kitabındaki örneklerin pratiğe dökülmüş hali, yani işin teorisi sağlam.
+# 📡 Kablosuz Haberleşme Path Loss (Yol Kaybı) Modelleri
 
-📂 Dosyalar ve Ne İşe Yaradıkları
-Burada 3 temel fonksiyon, 2 tane de bunları çalıştırıp grafik çizen script var.
+Bu repo, kablosuz haberleşme sistemlerinde sinyal gücünün mesafeye ve ortam şartlarına bağlı olarak zayıflamasını (Path Loss) simüle eden MATLAB fonksiyonlarını ve test scriptlerini içerir. Kodlar, *MIMO-OFDM Wireless Communications with MATLAB* kitabındaki teorik modeller temel alınarak hazırlanmıştır.
 
-Fonksiyonlar (Hesap Kitap İşleri)
-PL_free.m: En temel model. Ortamda hiç engel yokmuş gibi (Serbest Uzay/Free Space) kaybı hesaplar. Formül Friis denkleminden geliyor.
+## 📂 Dosya İçerikleri
 
-PL_Hata.m: Hata Modeli. Bu biraz daha gerçekçi; şehir merkezi (urban), banliyö (suburban) veya açık alan (open) gibi ortamları hesaba katar. Frekansı Hz olarak girsen de o içeride MHz'e çevirip işlemi yapıyor, kafan rahat olsun.
+Proje, 3 temel hesaplama fonksiyonu ve bunları görselleştiren 2 çalıştırma dosyasından oluşur.
 
-PL_logdist_or_norm.m: Log-Distance ve Gölgeleme (Shadowing) modeli. Mesafeye bağlı standart kaybın üstüne bir de rastgele gürültü (standart sapma ile) ekleyerek gerçek hayat şartlarını (bina engeli vs.) simüle eder.
+### 1. Hesaplama Fonksiyonları
+Bu fonksiyonlar, verilen parametrelere göre yol kaybını (dB cinsinden) hesaplar:
 
-Çalıştırma Dosyaları (Grafik Şov)
-plot_PL_general.m: Serbest uzay, Log-distance ve Log-normal modellerini kıyaslayan grafikleri çizer. Hepsini yan yana görmek için bunu çalıştır.
+* **`PL_free.m` (Serbest Uzay Modeli):**
+    * Engelsiz ortamda (Free Space) sinyal kaybını hesaplar.
+    * Friis denklemine dayanır.
+    * Kullanım: `PL = PL_free(fc, dist, Gt, Gr)`
 
-plot_PL_Hata.m: Hata modelini çalıştırır. Şehir, banliyö ve açık alan arasındaki farkı tek grafikte gösterir.
+* **`PL_Hata.m` (Hata Modeli):**
+    * Şehirleşme yapısına göre (Büyük şehir, banliyö, açık alan) kaybı hesaplar.
+    * **Önemli:** Fonksiyon frekansı Hz olarak alır ancak içeride MHz'e dönüştürerek işlem yapar.
+    * Kullanım: `PL = PL_Hata(fc, d, htx, hrx, Etype)`
 
-🚀 Nasıl Kullanılır?
-MATLAB'ı aç.
+* **`PL_logdist_or_norm.m` (Log-Distance & Shadowing):**
+    * Mesafeye bağlı logaritmik kaybın üzerine, ortamdaki rastgele engelleri (bina, ağaç vb.) simüle etmek için "Gölgeleme" (Shadowing) ekler.
+    * Kullanım: `PL = PL_logdist_or_norm(fc, d, d0, n, sigma)`
 
-Tüm dosyaların aynı klasörde olduğundan emin ol.
+### 2. Görselleştirme (Plot) Dosyaları
+Modelleri test etmek ve grafikleri çizdirmek için bu dosyaları çalıştırın:
 
-Grafikleri görmek için plot_PL_general.m veya plot_PL_Hata.m dosyasını aç ve çalıştır (Run).
+* **`plot_PL_general.m`**: Serbest Uzay, Log-Distance ve Log-Normal modellerini aynı anda çalıştırır ve yan yana 3 grafik çizer.
+* **`plot_PL_Hata.m`**: Hata modelini; şehir (urban), banliyö (suburban) ve açık alan (open) senaryoları için çalıştırır ve karşılaştırmalı grafik verir.
 
-Kendi senaryonu denemek istersen scriptlerin içindeki frekans (fc), mesafe (distance) veya anten yüksekliklerini (htx, hrx) değiştirip tekrar bas.
+## 🚀 Kurulum ve Kullanım
 
-⚠️ Ufak Bir Not
-Hata Modeli (PL_Hata): Frekansı fonksiyona Hz cinsinden veriyorsun (mesela 1.5e9), o içeride MHz'e (1500) dönüştürüyor. Elle MHz'e çevirip girme, sonuç şaşar.
+1.  Bu klasördeki tüm dosyaları MATLAB çalışma dizinine (Current Folder) indirin.
+2.  MATLAB komut penceresine (Command Window) aşağıdaki komutlardan birini yazıp `Enter`a basın:
 
-📚 Kaynak
-Bu kodlar şu kitaptan referans alınmıştır:
+    ```matlab
+    plot_PL_general
+    ```
+    *veya*
+    ```matlab
+    plot_PL_Hata
+    ```
 
-MIMO-OFDM Wireless Communications with MATLAB - Yong Soo Cho, Jaekwon Kim, Won Young Yang, Chung G. Kang (2010, Wiley).
+3.  Parametreleri değiştirmek için `.m` dosyalarını açıp `fc` (frekans), `htx` (verici yüksekliği) veya `distance` (mesafe) değişkenlerini düzenleyebilirsiniz.
+
+## ⚠️ Dikkat Edilmesi Gerekenler
+
+* **Frekans Birimi:** `PL_Hata.m` fonksiyonunu manuel kullanacaksanız, frekans değerini **Hz** cinsinden (örneğin `1.5e9` yani 1.5 GHz) girin. Kod, formüle uygulamadan önce bunu otomatik olarak MHz'e çevirir.
+
+## 📚 Kaynakça
+* *MIMO-OFDM Wireless Communications with MATLAB* - Yong Soo Cho, Jaekwon Kim, Won Young Yang, Chung G. Kang (2010, John Wiley & Sons)
